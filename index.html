@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Özel İçerik</title>
+    <style>
+        /* Genel Sayfa Düzeni */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            font-family: 'Arial', sans-serif;
+            background-color: #1a1a1a; /* Koyu arka plan */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Şifre Giriş Ekranı Tasarımı */
+        #login-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        h2 { margin-bottom: 20px; font-weight: 300; }
+
+        input[type="number"] {
+            padding: 15px;
+            font-size: 24px;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            width: 150px;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+            outline: none;
+        }
+
+        /* Ok tuşlarını gizle (input için) */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 18px;
+            background-color: #007AFF; /* Mavi buton */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:active { background-color: #0056b3; }
+        
+        #error-msg {
+            color: #ff4d4d;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Video Alanı (Başlangıçta gizli) */
+        #video-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Videoyu ekrana sığdır */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-container">
+        <h2>Şifreyi Girin</h2>
+        <input type="number" id="passInput" placeholder="****" maxlength="4" oninput="if(this.value.length > 4) this.value = this.value.slice(0, 4);">
+        <br>
+        <button onclick="checkPassword()">Giriş</button>
+        <p id="error-msg">Hatalı Şifre!</p>
+    </div>
+
+    <div id="video-container">
+        <video id="secretVideo" playsinline>
+            <source src="video.mp4" type="video/mp4">
+            Tarayıcınız video formatını desteklemiyor.
+        </video>
+    </div>
+
+    <script>
+        // ŞİFREYİ BURADAN BELİRLEYİN
+        const DOGRU_SIFRE = "1923"; 
+
+        function checkPassword() {
+            const inputVal = document.getElementById('passInput').value;
+            const errorMsg = document.getElementById('error-msg');
+            const loginBox = document.getElementById('login-container');
+            const videoBox = document.getElementById('video-container');
+            const videoElement = document.getElementById('secretVideo');
+
+            if (inputVal === DOGRU_SIFRE) {
+                // Şifre doğruysa:
+                loginBox.style.display = 'none'; // Giriş ekranını gizle
+                videoBox.style.display = 'flex'; // Video kutusunu aç
+                
+                // Videoyu oynat
+                videoElement.play().catch(e => console.log("Otomatik oynatma engellendi, kullanıcı etkileşimi gerekebilir."));
+
+                // Tam Ekran Yap (Fullscreen API)
+                if (videoElement.requestFullscreen) {
+                    videoElement.requestFullscreen();
+                } else if (videoElement.webkitRequestFullscreen) { /* Safari */
+                    videoElement.webkitRequestFullscreen();
+                } else if (videoElement.msRequestFullscreen) { /* IE11 */
+                    videoElement.msRequestFullscreen();
+                }
+
+                // (Opsiyonel) Ekranı Yatay Çevirmeyi Tetikle (Sadece destekleyen Android cihazlarda çalışır)
+                if (screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(err => console.log('Yatay kilit desteklenmiyor.'));
+                }
+
+            } else {
+                // Şifre yanlışsa:
+                errorMsg.style.display = 'block';
+                document.getElementById('passInput').value = '';
+            }
+        }
+    </script>
+</body>
+</html>
