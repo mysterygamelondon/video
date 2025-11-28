@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Özel İçerik</title>
     <style>
-        /* Genel Sayfa Düzeni */
+        /* Siyah Arka Plan ve Reset */
         body, html {
             margin: 0;
             padding: 0;
@@ -14,25 +14,34 @@
             font-family: 'Arial', sans-serif;
             background-color: #000;
             color: white;
+            overflow: hidden; /* Kaydırmayı engelle */
+        }
+
+        /* ORTALAMA SİSTEMİ (Flexbox) */
+        .centered-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
 
-        /* Şifre Giriş Ekranı */
+        /* --- ŞİFRE EKRANI --- */
         #login-container {
             text-align: center;
             background: rgba(255, 255, 255, 0.1);
-            padding: 40px;
+            padding: 30px;
             border-radius: 15px;
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 2;
-            position: relative;
+            z-index: 20; /* En üstte */
+            width: 80%;
+            max-width: 400px;
         }
 
-        h2 { margin-bottom: 20px; font-weight: 300; }
+        h2 { font-weight: 300; margin-bottom: 20px; font-size: 1.5rem; }
 
         input[type="number"] {
             padding: 15px;
@@ -40,80 +49,184 @@
             text-align: center;
             border: none;
             border-radius: 8px;
-            width: 150px;
+            width: 100%;
+            max-width: 150px;
             margin-bottom: 20px;
             letter-spacing: 5px;
             outline: none;
         }
 
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        /* Input oklarını gizle */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         button {
-            padding: 12px 30px;
+            padding: 15px 40px;
             font-size: 18px;
             background-color: #cc0000; 
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
+            width: 100%;
+            max-width: 200px;
         }
-        button:active { background-color: #990000; }
         
-        #error-msg { color: #ff4d4d; margin-top: 10px; display: none; }
+        #error-msg { color: #ff4d4d; margin-top: 15px; display: none; }
 
-        /* Video Alanı Wrapper */
+        /* --- VİDEO ALANI --- */
         #video-wrapper {
-            display: none; /* Başlangıçta gizli */
+            display: none; /* Şifreden sonra açılacak */
+            width: 100vw;
+            height: 100vh;
+            background: black;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            background: black;
+            z-index: 10;
         }
 
-        /* Görünmez Duvar (Tıklamayı Engeller) */
+        /* Video Kapsayıcısı (Aspect Ratio Koruması) */
+        .video-responsive {
+            position: relative;
+            width: 100%;
+            /* 16:9 Oranını koru ama ekran dışına taşma */
+            max-width: 177.78vh; /* 16/9 * 100vh */
+            aspect-ratio: 16 / 9; 
+            margin: auto;
+        }
+
+        #player {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* Görünmez Duvar */
         #blocker {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 15;
             background: transparent;
-            z-index: 10;
         }
 
-        /* YouTube Iframe'i buraya yerleşecek */
-        #player {
+        /* --- SESİ AÇ BUTONU (Overlay) --- */
+        #unmute-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 25;
+            background: rgba(0,0,0,0.4);
+            cursor: pointer;
+        }
+
+        .unmute-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: black;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- CİHAZI ÇEVİR UYARISI (Sadece Video Açıkken ve Dikeyken) --- */
+        #rotate-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .rotate-icon {
+            font-size: 50px;
+            margin-bottom: 20px;
+            animation: rotate-phone 2s infinite;
+        }
+
+        @keyframes rotate-phone {
+            0%, 10% { transform: rotate(0deg); }
+            40%, 60% { transform: rotate(90deg); }
+            90%, 100% { transform: rotate(0deg); }
+        }
+
+        /* Dikey ekran algılama */
+        @media screen and (orientation: portrait) {
+            /* Video wrapper aktifse (.active class'ı varsa) uyarıyı göster */
+            #video-wrapper.active ~ #rotate-warning {
+                display: flex;
+            }
         }
     </style>
 </head>
 <body>
 
-    <div id="login-container">
-        <h2>Crack the 4-digit code</h2>
-        <input type="number" id="passInput" placeholder="****" maxlength="4">
-        <br>
-        <button onclick="checkPassword()">Enter</button>
-        <p id="error-msg">Incorrect Password!</p>
+    <!-- GİRİŞ EKRANI -->
+    <div id="login-container" class="centered-wrapper">
+        <div>
+            <h2>Crack the 4-digit code</h2>
+            <input type="number" id="passInput" placeholder="****" maxlength="4">
+            <br>
+            <button onclick="checkPassword()">Enter</button>
+            <p id="error-msg">Incorrect Password!</p>
+        </div>
     </div>
 
-    <div id="video-wrapper">
-        <div id="blocker"></div>
-        <div id="player"></div>
+    <!-- CİHAZI ÇEVİR UYARISI -->
+    <div id="rotate-warning">
+        <div class="rotate-icon">📱 ➡️ 🔄</div>
+        <h3>Daha iyi bir deneyim için<br>telefonu yan çevirin</h3>
+    </div>
+
+    <!-- VİDEO ALANI -->
+    <div id="video-wrapper" class="centered-wrapper">
+        <div class="video-responsive">
+            <!-- Görünmez Duvar -->
+            <div id="blocker" onclick="unmuteVideo()"></div>
+            
+            <!-- Sesi Aç Butonu -->
+            <div id="unmute-overlay" onclick="unmuteVideo()">
+                <div class="unmute-btn">
+                    <span>🔊</span> SESİ AÇ / TIKLA
+                </div>
+            </div>
+
+            <!-- YouTube Oyuncusu -->
+            <div id="player"></div>
+        </div>
     </div>
 
     <script>
         // --- AYARLAR ---
         const DOGRU_SIFRE = "1923"; 
-        const YOUTUBE_VIDEO_ID = "IUKratUzPIM"; // ID'yi buraya yazın
+        const YOUTUBE_VIDEO_ID = "IUKratUzPIM"; 
 
-        var player; // YouTube oyuncusu değişkeni
+        var player;
 
         function checkPassword() {
             const inputVal = document.getElementById('passInput').value;
@@ -123,25 +236,23 @@
 
             if (inputVal === DOGRU_SIFRE) {
                 loginBox.style.display = 'none';
-                videoWrapper.style.display = 'block';
+                videoWrapper.style.display = 'flex';
+                
+                // Dikey ekran uyarısını tetiklemek için class ekle
+                videoWrapper.classList.add('active');
 
-                // API Script'ini dinamik olarak yükle
+                // YouTube API Script'ini yükle
                 var tag = document.createElement('script');
                 tag.src = "https://www.youtube.com/iframe_api";
                 var firstScriptTag = document.getElementsByTagName('script')[0];
                 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
-                // Yatay ekran kilidi (Android)
-                if (screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(e => console.log('Yatay kilit desteklenmiyor'));
-                }
             } else {
                 errorMsg.style.display = 'block';
                 document.getElementById('passInput').value = '';
             }
         }
 
-        // YouTube API Hazır olduğunda çalışır
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('player', {
                 height: '100%',
@@ -149,11 +260,12 @@
                 videoId: YOUTUBE_VIDEO_ID,
                 playerVars: {
                     'autoplay': 1,
+                    'mute': 1,           // MOBİL İÇİN KRİTİK: Sessiz başlamalı
                     'controls': 0,       // Kontroller gizli
-                    'modestbranding': 1, // Logo minimize
-                    'rel': 0,            // Önerilen videolar kapalı
-                    'playsinline': 1,
-                    'iv_load_policy': 3  // Notlar kapalı
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'playsinline': 1,    // IOS İÇİN KRİTİK: Tam ekranı zorlamaz, sayfa içinde oynatır
+                    'iv_load_policy': 3
                 },
                 events: {
                     'onReady': onPlayerReady
@@ -161,13 +273,25 @@
             });
         }
 
-        // Oynatıcı yüklendiğinde kaliteyi zorla
         function onPlayerReady(event) {
             event.target.playVideo();
-            
-            // 4K Kalite İsteği (highres)
-            // highres, hd1080, hd720, large, medium, small
-            event.target.setPlaybackQuality('highres'); 
+            event.target.setPlaybackQuality('highres');
+        }
+
+        // Ses açma ve butonu gizleme fonksiyonu
+        function unmuteVideo() {
+            if (player) {
+                player.unMute();
+                player.setVolume(100);
+                
+                // Overlay'i kaldır
+                document.getElementById('unmute-overlay').style.display = 'none';
+                
+                // Eğer video durmuşsa tekrar başlat (bazı tarayıcılar için)
+                if(player.getPlayerState() !== 1) {
+                    player.playVideo();
+                }
+            }
         }
     </script>
 </body>
