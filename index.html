@@ -17,38 +17,28 @@
             overflow: hidden;
         }
 
-        /* Flexbox ile Merkezleme */
-        .centered-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
+        /* --- ŞİFRE EKRANI --- */
+        #login-container {
             position: fixed;
             top: 0;
             left: 0;
-        }
-
-        /* --- ŞİFRE EKRANI (Responsive & Ölçeklenebilir) --- */
-        #login-container {
+            width: 100vw;
+            height: 100svh; /* URL barı düşülmüş yükseklik */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8); /* Arka planı biraz daha koyu yaptık */
+            background: rgba(0, 0, 0, 0.8);
             z-index: 20;
             padding: 20px;
             box-sizing: border-box;
         }
 
-        /* İçerik Kutusu */
         .login-box {
             width: 90%;
-            max-width: 500px; /* Tablet/Desktop sınırı */
+            max-width: 500px;
             text-align: center;
-            padding: 5vh 20px; /* Yüksekliğe göre padding */
+            padding: 30px 20px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             backdrop-filter: blur(15px);
@@ -57,20 +47,20 @@
 
         h2 { 
             font-weight: 300; 
-            margin-bottom: 4vh; 
-            font-size: clamp(24px, 5vw, 40px); /* Ekran boyutuna göre yazı boyutu */
+            margin-bottom: 20px; 
+            font-size: clamp(20px, 5vw, 36px); 
             text-transform: uppercase;
             letter-spacing: 2px;
         }
 
         input[type="number"] {
-            padding: 2vh;
-            font-size: clamp(30px, 8vw, 50px); /* Büyük input */
+            padding: 15px;
+            font-size: clamp(24px, 6vw, 40px);
             text-align: center;
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 12px;
-            width: 80%;
-            margin-bottom: 4vh;
+            width: 70%;
+            margin-bottom: 20px;
             letter-spacing: 10px;
             outline: none;
             background: rgba(0, 0, 0, 0.5);
@@ -79,17 +69,13 @@
             transition: border-color 0.3s;
         }
 
-        input[type="number"]:focus {
-            border-color: #cc0000;
-        }
-
-        /* Input oklarını gizle */
+        input[type="number"]:focus { border-color: #cc0000; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         button {
-            padding: 2.5vh 0;
-            width: 80%;
-            font-size: clamp(18px, 4vw, 24px);
+            padding: 15px 0;
+            width: 70%;
+            font-size: clamp(16px, 4vw, 20px);
             background-color: #cc0000; 
             color: white;
             border: none;
@@ -99,15 +85,15 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             box-shadow: 0 5px 15px rgba(204, 0, 0, 0.4);
-            transition: transform 0.2s, background 0.3s;
+            transition: transform 0.2s;
         }
 
-        button:active { transform: scale(0.95); background-color: #aa0000; }
+        button:active { transform: scale(0.95); }
         
         #error-msg { 
             color: #ff4d4d; 
-            margin-top: 3vh; 
-            font-size: clamp(16px, 3vw, 20px);
+            margin-top: 15px; 
+            font-size: 16px;
             display: none; 
             font-weight: bold; 
             animation: shake 0.5s;
@@ -119,34 +105,36 @@
             75% { transform: translateX(10px); }
         }
 
-        /* --- VİDEO ALANI --- */
+        /* --- VİDEO ALANI (YENİ SİSTEM) --- */
         #video-wrapper {
             display: none;
-            width: 100vw;
-            height: 100vh;
-            background: black;
             position: fixed;
             top: 0;
             left: 0;
+            width: 100vw;
+            /* 100svh: Küçük viewport (URL barı görünürkenki alan) */
+            height: 100svh; 
+            background: black;
             z-index: 10;
-        }
-
-        .video-responsive {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* iframe stili - Tam ekran zorlama */
+        /* Video Kapsayıcısı: Matematiksel olarak asla taşmayacak şekilde ayarlandı */
+        .video-container {
+            position: relative;
+            /* Genişlik: Ekran genişliği AMA yükseklik 16:9 oranını aşarsa daralt */
+            width: min(100vw, 177.78svh); 
+            /* Yükseklik: Ekran yüksekliği AMA genişlik 16:9 oranını aşarsa daralt */
+            height: min(100svh, 56.25vw);
+            /* Böylece video her zaman 16:9 kalır ve asla ekranın dışına taşmaz */
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+
         #player {
             width: 100%;
             height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
+            display: block;
         }
 
         #blocker {
@@ -170,17 +158,17 @@
             justify-content: center;
             align-items: center;
             z-index: 25;
-            background: rgba(0,0,0,0.6);
+            background: rgba(0,0,0,0.4);
             cursor: pointer;
         }
 
         .unmute-btn {
             background: rgba(255, 255, 255, 0.95);
             color: black;
-            padding: 25px 50px;
+            padding: 20px 40px;
             border-radius: 50px;
             font-weight: 800;
-            font-size: clamp(18px, 4vw, 24px);
+            font-size: clamp(16px, 4vw, 22px);
             display: flex;
             align-items: center;
             gap: 15px;
@@ -194,14 +182,14 @@
             100% { transform: scale(1); }
         }
 
-        /* --- CİHAZI ÇEVİR UYARISI (İNGİLİZCE) --- */
+        /* --- CİHAZI ÇEVİR UYARISI --- */
         #rotate-warning {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100svh;
             background: #000;
             z-index: 100;
             flex-direction: column;
@@ -211,18 +199,8 @@
             color: white;
         }
 
-        .rotate-icon {
-            font-size: 80px;
-            margin-bottom: 30px;
-            animation: rotate-phone 2s infinite;
-        }
-
-        .rotate-text {
-            font-size: 24px;
-            font-weight: 300;
-            line-height: 1.5;
-            padding: 0 20px;
-        }
+        .rotate-icon { font-size: 60px; margin-bottom: 20px; animation: rotate-phone 2s infinite; }
+        .rotate-text { font-size: 20px; font-weight: 300; padding: 0 20px; }
 
         @keyframes rotate-phone {
             0%, 10% { transform: rotate(0deg); }
@@ -230,8 +208,7 @@
             90%, 100% { transform: rotate(0deg); }
         }
 
-        /* CSS Hilesi: Video aktifse (.active) VE ekran dikeyse uyarıyı göster */
-        /* Bu sefer ~ (sibling) seçicisi çalışsın diye rotate-warning'i HTML'de video-wrapper'dan sonraya koyduk */
+        /* Sadece video açıkken ve dikeyken uyar */
         @media screen and (orientation: portrait) {
             #video-wrapper.active ~ #rotate-warning {
                 display: flex;
@@ -246,6 +223,7 @@
         <div class="login-box">
             <h2>Crack the Code</h2>
             <input type="number" id="passInput" placeholder="****" maxlength="4">
+            <br>
             <button onclick="checkPassword()">ENTER</button>
             <p id="error-msg">INCORRECT PASSWORD!</p>
         </div>
@@ -253,7 +231,7 @@
 
     <!-- VİDEO ALANI -->
     <div id="video-wrapper">
-        <div class="video-responsive">
+        <div class="video-container">
             <div id="blocker" onclick="unmuteVideo()"></div>
             
             <div id="unmute-overlay" onclick="unmuteVideo()">
@@ -266,7 +244,7 @@
         </div>
     </div>
 
-    <!-- CİHAZI ÇEVİR UYARISI (HTML sırası değiştirildi, artık en sonda) -->
+    <!-- CİHAZI ÇEVİR UYARISI -->
     <div id="rotate-warning">
         <div class="rotate-icon">📱 ➡️ 🔄</div>
         <div class="rotate-text">
@@ -275,10 +253,8 @@
     </div>
 
     <script>
-        // --- AYARLAR ---
         const DOGRU_SIFRE = "1923"; 
         const YOUTUBE_VIDEO_ID = "IUKratUzPIM"; 
-
         var player;
 
         function checkPassword() {
@@ -289,22 +265,22 @@
 
             if (inputVal === DOGRU_SIFRE) {
                 loginBox.style.display = 'none';
-                videoWrapper.style.display = 'block';
                 
-                // CSS'teki dikey ekran uyarısını tetiklemek için class ekle
+                // Flex ile merkezi hizalama için display: flex yapıyoruz
+                videoWrapper.style.display = 'flex';
                 videoWrapper.classList.add('active');
 
-                // YouTube API Script'ini yükle
                 var tag = document.createElement('script');
                 tag.src = "https://www.youtube.com/iframe_api";
                 var firstScriptTag = document.getElementsByTagName('script')[0];
                 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+                
+                // Tam ekran denemesi (Tarayıcı izin verirse)
+                toggleFullScreen();
 
-                // Tarayıcı izin verirse otomatik çevir
                 if (screen.orientation && screen.orientation.lock) {
                     screen.orientation.lock('landscape').catch(e => console.log('Otomatik döndürme engellendi.'));
                 }
-
             } else {
                 errorMsg.style.display = 'block';
                 document.getElementById('passInput').value = '';
@@ -322,18 +298,15 @@
                     'controls': 0,
                     'modestbranding': 1,
                     'rel': 0,
-                    'playsinline': 1, // iOS için kritik
+                    'playsinline': 1,
                     'iv_load_policy': 3
                 },
-                events: {
-                    'onReady': onPlayerReady
-                }
+                events: { 'onReady': onPlayerReady }
             });
         }
 
         function onPlayerReady(event) {
             event.target.playVideo();
-            // Kaliteyi zorla ama mobilde bant genişliği önceliklidir
             event.target.setPlaybackQuality('highres');
         }
 
@@ -342,9 +315,19 @@
                 player.unMute();
                 player.setVolume(100);
                 document.getElementById('unmute-overlay').style.display = 'none';
-                if(player.getPlayerState() !== 1) {
-                    player.playVideo();
-                }
+                if(player.getPlayerState() !== 1) { player.playVideo(); }
+            }
+        }
+
+        // URL barını gizlemek için Fullscreen tetikleyici
+        function toggleFullScreen() {
+            var doc = window.document;
+            var docEl = doc.documentElement;
+
+            var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+            
+            if(requestFullScreen) {
+                requestFullScreen.call(docEl).catch(err => console.log("Tam ekran reddedildi, sorun yok."));
             }
         }
     </script>
