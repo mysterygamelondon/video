@@ -17,14 +17,14 @@
             overflow: hidden; /* Kaydırmayı engelle */
         }
 
-        /* ORTALAMA SİSTEMİ (Flexbox) */
+        /* ORTALAMA SİSTEMİ (Flexbox) - Mobilde daha stabil olması için fixed yapıldı */
         .centered-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
             height: 100%;
-            position: absolute;
+            position: fixed; /* Mobilde sayfa kaymasını önler */
             top: 0;
             left: 0;
         }
@@ -37,8 +37,10 @@
             border-radius: 15px;
             backdrop-filter: blur(10px);
             z-index: 20; /* En üstte */
-            width: 80%;
+            width: 85%; /* Mobilde biraz daha geniş */
             max-width: 400px;
+            box-sizing: border-box; /* Padding'i genişliğe dahil et */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Derinlik hissi */
         }
 
         h2 { font-weight: 300; margin-bottom: 20px; font-size: 1.5rem; }
@@ -50,10 +52,11 @@
             border: none;
             border-radius: 8px;
             width: 100%;
-            max-width: 150px;
+            max-width: 180px; /* Input genişliği sınırlandırıldı */
             margin-bottom: 20px;
             letter-spacing: 5px;
             outline: none;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         /* Input oklarını gizle */
@@ -69,9 +72,12 @@
             cursor: pointer;
             width: 100%;
             max-width: 200px;
+            transition: transform 0.1s;
         }
+
+        button:active { transform: scale(0.95); }
         
-        #error-msg { color: #ff4d4d; margin-top: 15px; display: none; }
+        #error-msg { color: #ff4d4d; margin-top: 15px; display: none; font-weight: bold; }
 
         /* --- VİDEO ALANI --- */
         #video-wrapper {
@@ -188,7 +194,8 @@
 
     <!-- GİRİŞ EKRANI -->
     <div id="login-container" class="centered-wrapper">
-        <div>
+        <!-- İçerik kutusu, ortalamayı garanti etmek için -->
+        <div style="width: 100%;">
             <h2>Crack the 4-digit code</h2>
             <input type="number" id="passInput" placeholder="****" maxlength="4">
             <br>
@@ -212,7 +219,7 @@
             <!-- Sesi Aç Butonu -->
             <div id="unmute-overlay" onclick="unmuteVideo()">
                 <div class="unmute-btn">
-                    <span>🔊</span> SESİ AÇ / TIKLA
+                    <span>🔊</span> TAP TO UNMUTE
                 </div>
             </div>
 
