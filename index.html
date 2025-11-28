@@ -301,13 +301,25 @@
                     'playsinline': 1,
                     'iv_load_policy': 3
                 },
-                events: { 'onReady': onPlayerReady }
+                events: { 
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange // Kaliteyi sürekli kontrol etmek için yeni event
+                }
             });
         }
 
         function onPlayerReady(event) {
             event.target.playVideo();
+            // Açılışta kaliteyi zorla
             event.target.setPlaybackQuality('highres');
+        }
+
+        // İNATÇI KALİTE KONTROLÜ
+        function onPlayerStateChange(event) {
+            // Eğer video Tamponluyorsa (3) veya Oynatılıyorsa (1) kaliteyi tekrar zorla
+            if (event.data == YT.PlayerState.PLAYING || event.data == YT.PlayerState.BUFFERING) {
+                event.target.setPlaybackQuality('highres');
+            }
         }
 
         function unmuteVideo() {
