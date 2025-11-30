@@ -105,14 +105,13 @@
             75% { transform: translateX(10px); }
         }
 
-        /* --- VİDEO ALANI (YENİ SİSTEM) --- */
+        /* --- VİDEO ALANI --- */
         #video-wrapper {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
-            /* 100svh: Küçük viewport (URL barı görünürkenki alan) */
             height: 100svh; 
             background: black;
             z-index: 10;
@@ -120,14 +119,11 @@
             justify-content: center;
         }
 
-        /* Video Kapsayıcısı: Matematiksel olarak asla taşmayacak şekilde ayarlandı */
+        /* Video Kapsayıcısı */
         .video-container {
             position: relative;
-            /* Genişlik: Ekran genişliği AMA yükseklik 16:9 oranını aşarsa daralt */
             width: min(100vw, 177.78svh); 
-            /* Yükseklik: Ekran yüksekliği AMA genişlik 16:9 oranını aşarsa daralt */
             height: min(100svh, 56.25vw);
-            /* Böylece video her zaman 16:9 kalır ve asla ekranın dışına taşmaz */
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
         }
 
@@ -254,8 +250,9 @@
 
     <script>
         const DOGRU_SIFRE = "1923"; 
-        const YOUTUBE_VIDEO_ID = "yOmN3RcYCIM"; 
+        const YOUTUBE_VIDEO_ID = "IUKratUzPIM"; 
         var player;
+        var qualityInterval; // Kalite zorlama döngüsü için değişken
 
         function checkPassword() {
             const inputVal = document.getElementById('passInput').value;
@@ -303,22 +300,39 @@
                 },
                 events: { 
                     'onReady': onPlayerReady,
-                    'onStateChange': onPlayerStateChange // Kaliteyi sürekli kontrol etmek için yeni event
+                    'onStateChange': onPlayerStateChange
                 }
             });
         }
 
-        function onPlayerReady(event) {
-            event.target.playVideo();
-            // Açılışta kaliteyi zorla
-            event.target.setPlaybackQuality('highres');
+        function forceHighQuality() {
+            if (!player) return;
+            // 4K (2160p) için özel istekleri sırasıyla gönderiyoruz
+            // highres bazen yeterli olmaz, spesifik olarak hd2160 istemek gerekebilir.
+            var qualities = ['highres', 'hd2160', 'hd1440', 'hd1080', 'hd720'];
+            for (var i = 0; i < qualities.length; i++) {
+                player.setPlaybackQuality(qualities[i]);
+            }
         }
 
-        // İNATÇI KALİTE KONTROLÜ
+        function onPlayerReady(event) {
+            event.target.playVideo();
+            forceHighQuality();
+
+            // AGRESİF MOD: İlk 5 saniye boyunca her 200 milisaniyede bir kalite komutu gönder
+            // Bu, YouTube'un "bağlantı yavaş" deyip kaliteyi düşürmesini engellemeye çalışır.
+            qualityInterval = setInterval(forceHighQuality, 200);
+
+            // 5 saniye sonra bu "spam"i durdur
+            setTimeout(function() {
+                clearInterval(qualityInterval);
+            }, 5000);
+        }
+
         function onPlayerStateChange(event) {
-            // Eğer video Tamponluyorsa (3) veya Oynatılıyorsa (1) kaliteyi tekrar zorla
+            // Video duraklayıp tekrar başladığında veya tampon belleğe aldığında tekrar zorla
             if (event.data == YT.PlayerState.PLAYING || event.data == YT.PlayerState.BUFFERING) {
-                event.target.setPlaybackQuality('highres');
+                forceHighQuality();
             }
         }
 
@@ -328,6 +342,9 @@
                 player.setVolume(100);
                 document.getElementById('unmute-overlay').style.display = 'none';
                 if(player.getPlayerState() !== 1) { player.playVideo(); }
+                
+                // Ses açıldığında bir kez daha kaliteyi dürt
+                forceHighQuality();
             }
         }
 
@@ -335,9 +352,7 @@
         function toggleFullScreen() {
             var doc = window.document;
             var docEl = doc.documentElement;
-
             var requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
-            
             if(requestFullScreen) {
                 requestFullScreen.call(docEl).catch(err => console.log("Tam ekran reddedildi, sorun yok."));
             }
